@@ -1,11 +1,13 @@
 A simple python chat app (demo) writtern with flask and gevent.
 
-To use it:  
+To set it up:  
 `sudo apt-get install libev-dev libevent-dev python-all-dev -y`  
 `# pip install --upgrade pip`
 `pip install pip-tools`  
 `# pip-compile`
 `pip-sync`
+
+To run it:
 `uwsgi --http-socket :5000 --gevent 100 --module app:app`
 ... and go to http://127.0.0.1:5000 to use it.
 
