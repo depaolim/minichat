@@ -1,17 +1,18 @@
 # Micro gevent chatroom.
 # ----------------------
 # Make things as simple as possible, but not simpler.
-from gevent import monkey; monkey.patch_all()
+from gevent import monkey
+monkey.patch_all()
+
 from flask import Flask, render_template, request, json
 
 from gevent import queue
-from gevent.pywsgi import WSGIServer
 
 app = Flask(__name__)
 app.debug = True
 
-class Room(object):
 
+class Room(object):
     def __init__(self):
         self.users = set()
         self.messages = []
@@ -28,8 +29,8 @@ class Room(object):
             user.queue.put_nowait(message)
         self.messages.append(message)
 
-class User(object):
 
+class User(object):
     def __init__(self):
         self.queue = queue.Queue()
 
@@ -40,16 +41,17 @@ rooms = {
 
 users = {}
 
+
 @app.route('/')
 def choose_name():
     return render_template('choose.html')
 
+
 @app.route('/<uid>')
 def main(uid):
-    return render_template('main.html',
-        uid=uid,
-        rooms=rooms.keys()
-    )
+    return render_template(
+        'main.html', uid=uid, rooms=rooms.keys())
+
 
 @app.route('/<room>/<uid>')
 def join(room, uid):
@@ -64,18 +66,18 @@ def join(room, uid):
 
     messages = active_room.backlog()
 
-    return render_template('room.html',
-        room=room, uid=uid, messages=messages)
+    return render_template(
+        'room.html', room=room, uid=uid, messages=messages)
+
 
 @app.route("/put/<room>/<uid>", methods=["POST"])
 def put(room, uid):
-    user = users[uid]
+    users[uid]
     room = rooms[room]
-
     message = request.form['message']
     room.add(':'.join([uid, message]))
-
     return ''
+
 
 @app.route("/poll/<uid>", methods=["POST"])
 def poll(uid):
@@ -84,7 +86,3 @@ def poll(uid):
     except queue.Empty:
         msg = []
     return json.dumps(msg)
-
-if __name__ == "__main__":
-    http = WSGIServer(('', 5000), app)
-    http.serve_forever()

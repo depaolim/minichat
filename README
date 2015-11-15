@@ -12,4 +12,4 @@ To run it:
 ... and go to http://127.0.0.1:5000 to use it.
 
 To test it without uwsgi:
-`python app.py`  
+`python main.py`  
