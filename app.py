@@ -12,12 +12,7 @@ app = Flask(__name__)
 app.debug = True
 
 
-ROOMS = {
-    'python': rooms.Room(),
-    'django': rooms.Room(),
-}
-
-USERS = {}
+SERVER = rooms.Server()
 
 
 @app.route('/')
@@ -28,36 +23,24 @@ def choose_name():
 @app.route('/<uid>')
 def main(uid):
     return render_template(
-        'main.html', uid=uid, rooms=ROOMS.keys())
+        'main.html', uid=uid, rooms=SERVER.rooms())
 
 
 @app.route('/<room>/<uid>')
 def join(room, uid):
-    user = USERS.get(uid, None)
-
-    if not user:
-        USERS[uid] = user = rooms.User()
-
-    active_room = ROOMS[room]
-    active_room.subscribe(user)
-    print 'subscribe', active_room, user
-
-    messages = active_room.backlog()
-
+    messages = SERVER.join(room, uid)
     return render_template(
         'room.html', room=room, uid=uid, messages=messages)
 
 
 @app.route("/put/<room>/<uid>", methods=["POST"])
 def put(room, uid):
-    USERS[uid]
-    room = ROOMS[room]
     message = request.form['message']
-    room.add(':'.join([uid, message]))
+    SERVER.put(room, uid, message)
     return ''
 
 
 @app.route("/poll/<uid>", methods=["POST"])
 def poll(uid):
-    msg = USERS[uid].get()
+    msg = SERVER.poll(uid)
     return json.dumps(msg)

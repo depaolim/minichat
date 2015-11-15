@@ -30,18 +30,13 @@ class User(object):
             return []
 
 
-################################################################################
-# TESTS
-################################################################################
-
-import unittest
-
-
-class TestAcceptance(unittest.TestCase):
-
-    def setUp(self):
+class Server(object):
+    def __init__(self):
         self.USERS = {}
         self.ROOMS = {'python': Room(), 'django': Room()}
+
+    def rooms(self):
+        return self.ROOMS.keys()
 
     def join(self, room, uid):
         user = self.USERS.get(uid, None)
@@ -56,20 +51,36 @@ class TestAcceptance(unittest.TestCase):
         messages = active_room.backlog()
         return messages
 
-    def put(self, uid, room_name, message):
+    def put(self, room, uid, message):
         self.USERS[uid]
-        room = self.ROOMS[room_name]
+        room = self.ROOMS[room]
         room.add(':'.join([uid, message]))
 
     def poll(self, uid):
         return self.USERS[uid].get()
 
-    def test(self):
-        self.assertFalse(self.join("python", "me"))
-        self.assertFalse(self.join("python", "io"))
-        self.put("me", "python", "ciao")
-        self.assertEqual(self.poll("io"), "me:ciao")
-        self.assertEqual(self.join("python", "you"), ["me:ciao"])
+
+################################################################################
+# TESTS
+################################################################################
+
+import unittest
+
+
+class TestAcceptance(unittest.TestCase):
+
+    def setUp(self):
+        self.server = Server()
+
+    def test_list(self):
+        self.assertEqual(self.server.rooms(), ["python", "django"])
+
+    def test_interaction(self):
+        self.assertFalse(self.server.join("python", "me"))
+        self.assertFalse(self.server.join("python", "io"))
+        self.server.put("python", "me", "ciao")
+        self.assertEqual(self.server.poll("io"), "me:ciao")
+        self.assertEqual(self.server.join("python", "you"), ["me:ciao"])
 
 
 if __name__ == '__main__':
