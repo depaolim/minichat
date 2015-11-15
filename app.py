@@ -6,40 +6,18 @@ monkey.patch_all()
 
 from flask import Flask, render_template, request, json
 
-from gevent import queue
+import rooms
 
 app = Flask(__name__)
 app.debug = True
 
 
-class Room(object):
-    def __init__(self):
-        self.users = set()
-        self.messages = []
-
-    def backlog(self, size=25):
-        return self.messages[-size:]
-
-    def subscribe(self, user):
-        self.users.add(user)
-
-    def add(self, message):
-        for user in self.users:
-            print user
-            user.queue.put_nowait(message)
-        self.messages.append(message)
-
-
-class User(object):
-    def __init__(self):
-        self.queue = queue.Queue()
-
-rooms = {
-    'python': Room(),
-    'django': Room(),
+ROOMS = {
+    'python': rooms.Room(),
+    'django': rooms.Room(),
 }
 
-users = {}
+USERS = {}
 
 
 @app.route('/')
@@ -50,17 +28,17 @@ def choose_name():
 @app.route('/<uid>')
 def main(uid):
     return render_template(
-        'main.html', uid=uid, rooms=rooms.keys())
+        'main.html', uid=uid, rooms=ROOMS.keys())
 
 
 @app.route('/<room>/<uid>')
 def join(room, uid):
-    user = users.get(uid, None)
+    user = USERS.get(uid, None)
 
     if not user:
-        users[uid] = user = User()
+        USERS[uid] = user = rooms.User()
 
-    active_room = rooms[room]
+    active_room = ROOMS[room]
     active_room.subscribe(user)
     print 'subscribe', active_room, user
 
@@ -72,8 +50,8 @@ def join(room, uid):
 
 @app.route("/put/<room>/<uid>", methods=["POST"])
 def put(room, uid):
-    users[uid]
-    room = rooms[room]
+    USERS[uid]
+    room = ROOMS[room]
     message = request.form['message']
     room.add(':'.join([uid, message]))
     return ''
@@ -81,8 +59,5 @@ def put(room, uid):
 
 @app.route("/poll/<uid>", methods=["POST"])
 def poll(uid):
-    try:
-        msg = users[uid].queue.get(timeout=10)
-    except queue.Empty:
-        msg = []
+    msg = USERS[uid].get()
     return json.dumps(msg)
