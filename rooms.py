@@ -32,19 +32,19 @@ class User(object):
 
 class Server(object):
     def __init__(self):
-        self.USERS = {}
-        self.ROOMS = {'python': Room(), 'django': Room()}
+        self.users = {}
+        self.rooms = {'python': Room(), 'django': Room()}
 
-    def rooms(self):
-        return self.ROOMS.keys()
+    def names(self):
+        return self.rooms.keys()
 
     def join(self, room, uid):
-        user = self.USERS.get(uid, None)
+        user = self.users.get(uid, None)
 
         if not user:
-            self.USERS[uid] = user = User()
+            self.users[uid] = user = User()
 
-        active_room = self.ROOMS[room]
+        active_room = self.rooms[room]
         active_room.subscribe(user)
         print 'subscribe', active_room, user
 
@@ -52,12 +52,12 @@ class Server(object):
         return messages
 
     def put(self, room, uid, message):
-        self.USERS[uid]
-        room = self.ROOMS[room]
+        self.users[uid]
+        room = self.rooms[room]
         room.add(':'.join([uid, message]))
 
     def poll(self, uid):
-        return self.USERS[uid].get()
+        return self.users[uid].get()
 
 
 ################################################################################
@@ -73,7 +73,7 @@ class TestAcceptance(unittest.TestCase):
         self.server = Server()
 
     def test_list(self):
-        self.assertEqual(self.server.rooms(), ["python", "django"])
+        self.assertEqual(self.server.names(), ["python", "django"])
 
     def test_interaction(self):
         self.assertFalse(self.server.join("python", "me"))
