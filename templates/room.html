@@ -12,7 +12,7 @@
                 var message = $("#messageinput").val();
                 $.ajax({
                     'type'     : 'POST',
-                    'url'      : '/put/{{room}}/{{uid}}',
+                    'url'      : '/put/{{room_id}}/{{uid}}',
                     'data'     : { 'message': message },
                     'dataType' : 'json',
                 });

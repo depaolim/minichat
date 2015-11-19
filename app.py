@@ -26,17 +26,17 @@ def main(uid):
         'main.html', uid=uid, rooms=SERVER.names())
 
 
-@app.route('/<room>/<uid>')
-def join(room, uid):
-    messages = SERVER.join(room, uid)
+@app.route('/<room_id>/<uid>')
+def join(room_id, uid):
+    messages = SERVER.join(room_id, uid)
     return render_template(
-        'room.html', room=room, uid=uid, messages=messages)
+        'room.html', room_id=room_id, uid=uid, messages=messages)
 
 
-@app.route("/put/<room>/<uid>", methods=["POST"])
-def put(room, uid):
+@app.route("/put/<room_id>/<uid>", methods=["POST"])
+def put(room_id, uid):
     message = request.form['message']
-    SERVER.put(room, uid, message)
+    SERVER.put(room_id, uid, message)
     return ''
 
 

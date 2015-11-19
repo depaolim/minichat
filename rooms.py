@@ -15,13 +15,16 @@ class Room(object):
     def add(self, message):
         for user in self.users:
             print user
-            user.queue.put_nowait(message)
+            user.put(message)
         self.messages.append(message)
 
 
 class User(object):
     def __init__(self):
         self.queue = queue.Queue()
+
+    def put(self, message):
+        self.queue.put_nowait(message)
 
     def get(self):
         try:
@@ -38,26 +41,26 @@ class Server(object):
     def names(self):
         return self.rooms.keys()
 
-    def join(self, room, uid):
-        user = self.users.get(uid, None)
+    def join(self, room_id, user_id):
+        user = self.users.get(user_id, None)
 
         if not user:
-            self.users[uid] = user = User()
+            self.users[user_id] = user = User()
 
-        active_room = self.rooms[room]
-        active_room.subscribe(user)
-        print 'subscribe', active_room, user
+        room = self.rooms[room_id]
+        room.subscribe(user)
+        print 'subscribe', room, user
 
-        messages = active_room.backlog()
+        messages = room.backlog()
         return messages
 
-    def put(self, room, uid, message):
-        self.users[uid]
-        room = self.rooms[room]
-        room.add(':'.join([uid, message]))
+    def put(self, room_id, user_id, message):
+        self.users[user_id]
+        room = self.rooms[room_id]
+        room.add(':'.join([user_id, message]))
 
-    def poll(self, uid):
-        return self.users[uid].get()
+    def poll(self, user_id):
+        return self.users[user_id].get()
 
 
 ################################################################################

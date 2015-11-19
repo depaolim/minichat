@@ -9,8 +9,8 @@
 <body>
     Rooms:
     <ul>
-        {% for room in rooms %}
-        <li><a href="/{{room}}/{{uid}}">{{room}}</a></li>
+        {% for room_id in rooms %}
+        <li><a href="/{{room_id}}/{{uid}}">{{room_id}}</a></li>
         {% endfor %}
     </ul>
 </body>
