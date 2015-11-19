@@ -12,7 +12,7 @@
                 var message = $("#messageinput").val();
                 $.ajax({
                     'type'     : 'POST',
-                    'url'      : '/put/{{room_id}}/{{uid}}',
+                    'url'      : '/put/{{room_id}}/{{user_id}}',
                     'data'     : { 'message': message },
                     'dataType' : 'json',
                 });
@@ -24,7 +24,7 @@
             var longPoll = function() {
               return $.ajax({
                 type: "POST",
-                url: "/poll/" + "{{uid}}",
+                url: "/poll/" + "{{user_id}}",
                 async: true,
                 cache: false,
                 timeout: 100000,

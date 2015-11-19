@@ -30,7 +30,7 @@ def main(user_id):
 def join(room_id, user_id):
     messages = SERVER.join(room_id, user_id)
     return render_template(
-        'room.html', room_id=room_id, uid=user_id, messages=messages)
+        'room.html', room_id=room_id, user_id=user_id, messages=messages)
 
 
 @app.route("/put/<room_id>/<user_id>", methods=["POST"])
