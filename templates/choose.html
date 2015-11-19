@@ -8,7 +8,7 @@
     <script type="text/javascript" charset="utf-8">
         $(document).ready(function() {
             $("#choose").submit(function(e) {
-                document.location = $("#uid").val();
+                document.location = $("#user_id").val();
                 e.preventDefault();
             });
         });
@@ -17,7 +17,7 @@
 <body>
     Choose Name:
     <form id="choose" action="/" method="GET">
-    <input id="uid"></input>
+    <input id="user_id"></input>
     <input type="submit" />
     </form>
 </body>

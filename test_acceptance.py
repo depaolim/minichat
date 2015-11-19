@@ -28,7 +28,7 @@ def browser(request):
 def test_acceptance(browser):
     browser.get('http://localhost:5000')
     assert 'Main' in browser.title
-    browser.find_element_by_id('uid').send_keys('me' + Keys.RETURN)
+    browser.find_element_by_id('user_id').send_keys('me' + Keys.RETURN)
     browser.find_element_by_link_text('python').click()
     browser.find_element_by_id('messageinput').send_keys('ciao' + Keys.RETURN)
     messages = browser.find_elements_by_css_selector('#messages li')
