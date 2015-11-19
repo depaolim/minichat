@@ -23,7 +23,7 @@ def choose_name():
 @app.route('/<user_id>')
 def main(user_id):
     return render_template(
-        'main.html', uid=user_id, rooms=SERVER.names())
+        'main.html', user_id=user_id, rooms=SERVER.names())
 
 
 @app.route('/<room_id>/<user_id>')
