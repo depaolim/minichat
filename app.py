@@ -20,27 +20,27 @@ def choose_name():
     return render_template('choose.html')
 
 
-@app.route('/<uid>')
-def main(uid):
+@app.route('/<user_id>')
+def main(user_id):
     return render_template(
-        'main.html', uid=uid, rooms=SERVER.names())
+        'main.html', uid=user_id, rooms=SERVER.names())
 
 
-@app.route('/<room_id>/<uid>')
-def join(room_id, uid):
-    messages = SERVER.join(room_id, uid)
+@app.route('/<room_id>/<user_id>')
+def join(room_id, user_id):
+    messages = SERVER.join(room_id, user_id)
     return render_template(
-        'room.html', room_id=room_id, uid=uid, messages=messages)
+        'room.html', room_id=room_id, uid=user_id, messages=messages)
 
 
-@app.route("/put/<room_id>/<uid>", methods=["POST"])
-def put(room_id, uid):
+@app.route("/put/<room_id>/<user_id>", methods=["POST"])
+def put(room_id, user_id):
     message = request.form['message']
-    SERVER.put(room_id, uid, message)
+    SERVER.put(room_id, user_id, message)
     return ''
 
 
-@app.route("/poll/<uid>", methods=["POST"])
-def poll(uid):
-    msg = SERVER.poll(uid)
+@app.route("/poll/<user_id>", methods=["POST"])
+def poll(user_id):
+    msg = SERVER.poll(user_id)
     return json.dumps(msg)
