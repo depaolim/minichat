@@ -11,5 +11,9 @@ To run it:
 `uwsgi --http-socket :5000 --gevent 100 --module app:app`
 ... and go to http://127.0.0.1:5000 to use it.
 
-To test it without uwsgi:
+To run it without uwsgi:
 `python main.py`  
+
+To run tests:
+`python rooms.py`
+`py.test -s`

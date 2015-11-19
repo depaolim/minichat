@@ -10,5 +10,8 @@ greenlet==0.4.9           # via gevent
 itsdangerous==0.24        # via flask
 jinja2==2.8               # via flask
 markupsafe==0.23          # via jinja2
+py==1.4.30                # via pytest
+pytest==2.8.2
+selenium==2.48.0
 uWSGI==2.0.11.2
 werkzeug==0.11.2          # via flask
