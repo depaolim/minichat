@@ -17,3 +17,7 @@ To run it without uwsgi:
 To run tests:
 `python rooms.py`
 `py.test -s`
+
+To run it with Django:
+`cd djchat`
+`py.test -s`
