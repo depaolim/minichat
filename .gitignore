@@ -4,3 +4,4 @@
 .cache/
 .ropeproject/
 db.sqlite3
+djchat/deploy/static

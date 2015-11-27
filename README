@@ -18,6 +18,7 @@ To run tests:
 `python rooms.py`
 `py.test -s`
 
-To run it with Django:
+To run tests with Django:
 `cd djchat`
+`./manage.py test`
 `py.test -s`

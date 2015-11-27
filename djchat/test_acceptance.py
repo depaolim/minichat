@@ -1,4 +1,5 @@
 import os
+import signal
 import subprocess
 
 import pytest
@@ -10,6 +11,7 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "djchat.settings")
 
 
 @pytest.fixture
+@pytest.mark.django_db(transaction=True)
 def django():
     print ("setup Django")
     import django
@@ -19,21 +21,20 @@ def django():
 
     os.remove("db.sqlite3")
     call_command("migrate")
+    call_command("collectstatic", "--noinput")
     User.objects.create_superuser('admin', 'admin@example.com', 'pass')
 
 
 @pytest.fixture(scope="module")
 def browser(request):
     print ("setup uWSGI")
-    uwsgi = subprocess.Popen([
-        "uwsgi", "--http-socket", ":5000", "--module", "djchat.wsgi"
-    ])
+    uwsgi = subprocess.Popen(["uwsgi", "uwsgi.ini"])
     print ("setup browser")
     browser = webdriver.Firefox()
 
     def fin():
         print ("teardown uWSGI")
-        uwsgi.kill()
+        uwsgi.send_signal(signal.SIGQUIT)
         print ("teardown browser")
         browser.quit()
     request.addfinalizer(fin)
@@ -41,11 +42,12 @@ def browser(request):
 
 
 def test_acceptance(django, browser):
+    browser.implicitly_wait(3)
     browser.get('http://localhost:5000/admin')
     browser.find_element_by_name('username').send_keys('admin')
     browser.find_element_by_name('password').send_keys('pass' + Keys.RETURN)
-    return
+    browser.find_element_by_link_text('Chat').click()
     browser.find_element_by_link_text('python').click()
     browser.find_element_by_id('messageinput').send_keys('ciao' + Keys.RETURN)
     messages = browser.find_elements_by_css_selector('#messages li')
-    assert [m.text for m in messages] == [u'me:ciao']
+    assert [m.text for m in messages] == [u'admin:ciao']

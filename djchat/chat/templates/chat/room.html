@@ -1,0 +1,93 @@
+{% load staticfiles %}
+
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <title>Main</title>
+    <script src="{% static 'chat/jquery/1.7.1/jquery.min.js' %}"></script>
+
+    <script type="text/javascript" charset="utf-8">
+       $(document).ready(function() {
+
+         if(typeof String.prototype.trim !== 'function') {
+           String.prototype.trim = function() {
+             return this.replace(/^\s+|\s+$/g, ''); 
+           }
+         }
+
+         function getCookie(name) {
+          var cookieValue = null;
+          if (document.cookie && document.cookie != '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+              var cookie = cookies[i].trim();
+              // Does this cookie string begin with the name we want?
+              if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+              }
+            }
+          }
+          return cookieValue;
+        }
+
+        $('#newmessage').submit(function(e) {
+          var message = $("#messageinput").val();
+          $.ajax({
+            'type'      : 'POST',
+            'url'       : '/chat/put_message/{{ room_id }}',
+            'data'      : { 'message': message },
+            'dataType'  : 'json',
+            'beforeSend': function(xhr, settings) {
+              xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+            }
+          });
+          $("#messageinput").val('');
+          $("#messageinput").focus();
+          e.preventDefault();
+        });
+
+        var longPoll = function() {
+          console.log("logPoll start...");
+          return $.ajax({
+            type: "POST",
+            url: "/chat/poll_message",
+            'dataType'  : 'json',
+            async: true,
+            cache: false,
+            timeout: 100000,
+            success: function(data) {
+              console.log("received");
+              if (data.length > 0) {
+                $("#messages").append($("<li>" + data + "</li>"))
+              }
+              return longPoll();
+            },
+            error: function(data) {
+              console.log("error", data);
+              return longPoll();
+            },
+            'beforeSend': function(xhr, settings) {
+              xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+            }
+          });
+        };
+
+        longPoll();
+      });
+    </script>
+</head>
+<body>
+    Messages:
+    <ul id="messages">
+        {% for message in messages %}
+        <li>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    <form id="newmessage">
+        <input id="messageinput" name="msg"></input>
+        <input type="submit"/>
+    </form>
+</body>
+</html>
