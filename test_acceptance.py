@@ -9,10 +9,7 @@ from selenium.webdriver.common.keys import Keys
 @pytest.fixture(scope="module")
 def browser(request):
     print ("setup uWSGI")
-    uwsgi = subprocess.Popen([
-        "uwsgi", "--http-socket", ":5000",
-        "--gevent", "100", "--module", "app:app"
-    ])
+    uwsgi = subprocess.Popen(["uwsgi", "uwsgi.ini"])
     print ("setup browser")
     browser = webdriver.Firefox()
 
